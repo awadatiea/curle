@@ -1,11 +1,13 @@
 import { useEffect, useState } from 'react'
-import { Link } from 'react-router-dom'
+import { Link, useSearchParams } from 'react-router-dom'
 import { getActiveProducts, type Product } from '../services/products'
 import { ArrowUpRight } from 'lucide-react'
 
 export default function ShopPage() {
   const [products, setProducts] = useState<Product[]>([])
   const [loading, setLoading] = useState(true)
+  const [searchParams] = useSearchParams()
+  const searchQuery = searchParams.get('search') || ''
 
   useEffect(() => {
     getActiveProducts()
@@ -14,25 +16,31 @@ export default function ShopPage() {
       .finally(() => setLoading(false))
   }, [])
 
+  // فلترة المنتجات بناءً على البحث
+  const filteredProducts = products.filter(p => 
+    p.name_ar.includes(searchQuery) || 
+    p.name_en.toLowerCase().includes(searchQuery.toLowerCase())
+  )
+
   return (
     <div className="section-pad" style={{ minHeight: '100vh', paddingTop: '120px' }}>
       <div style={{ textAlign: 'center', marginBottom: '60px' }}>
         <p className="eyebrow">THE CURLÉ EDIT</p>
         <h1 style={{ fontFamily: "'Playfair Display', serif", fontSize: '48px', margin: '0 0 16px' }}>
-          Shop All Essentials
+          {searchQuery ? `نتائج البحث عن: ${searchQuery}` : 'Shop All Essentials'}
         </h1>
         <p style={{ color: '#766b61', maxWidth: '500px', margin: '0 auto' }}>
-          Thoughtfully made products for every curl type.
+          {searchQuery ? `لقينا ${filteredProducts.length} منتج` : 'Thoughtfully made products for every curl type.'}
         </p>
       </div>
 
       {loading ? (
         <p style={{ textAlign: 'center' }}>Loading products...</p>
-      ) : products.length === 0 ? (
-        <p style={{ textAlign: 'center' }}>No products yet. Check back soon.</p>
+      ) : filteredProducts.length === 0 ? (
+        <p style={{ textAlign: 'center' }}>مفيش منتجات مطابقة للبحث.</p>
       ) : (
         <div className="product-grid">
-          {products.map((product) => (
+          {filteredProducts.map((product) => (
             <article className="product-card" key={product.id}>
               <div className="product-image">
                 <img src={product.image_url || ''} alt={product.name_ar} />
@@ -43,7 +51,7 @@ export default function ShopPage() {
               <div className="product-meta">
                 <div>
                   <h3>{product.name_ar}</h3>
-                  <p>{product.description_ar?.slice(0, 50)}...</p>
+                  <p>{product.description_ar?.slice(0, 40)}...</p>
                 </div>
                 <strong>{product.price} ج.م</strong>
               </div>

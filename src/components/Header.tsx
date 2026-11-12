@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react'
 import { Menu, X, ShoppingBag, Search, Heart, User, Shield } from 'lucide-react'
-import { Link, useLocation } from 'react-router-dom'
+import { Link, useLocation, useNavigate } from 'react-router-dom'
 import type { Language, Copy } from '../types'
 import { useAuth } from '../contexts/AuthContext'
 
@@ -13,20 +13,30 @@ interface HeaderProps {
 export default function Header({ lang, copy, onLanguageChange }: HeaderProps) {
   const [menuOpen, setMenuOpen] = useState(false)
   const [cartCount, setCartCount] = useState(0)
+  const [searchQuery, setSearchQuery] = useState('')
   const { user, signOut } = useAuth()
   const location = useLocation()
+  const navigate = useNavigate()
 
   const links = [
     { label: copy.nav.home, href: '/' },
     { label: copy.nav.shop, href: '/shop' },
     { label: copy.nav.journal, href: '/blog' },
-    { label: copy.nav.ourStory, href: '/#story' }, // يودي للرئيسية وينزل للقسم
+    { label: copy.nav.ourStory, href: '/#story' },
+    { label: 'الخدمات', href: '/services' },
   ]
 
   useEffect(() => {
     const cart = JSON.parse(localStorage.getItem('cart') || '[]')
     setCartCount(cart.reduce((sum: number, item: any) => sum + item.quantity, 0))
-  }, [location.pathname]) // تحديث السلة لما المسار يتغير
+  }, [location.pathname])
+
+  const handleSearch = (e: React.FormEvent) => {
+    e.preventDefault()
+    if (searchQuery.trim()) {
+      navigate(`/shop?search=${encodeURIComponent(searchQuery.trim())}`)
+    }
+  }
 
   return (
     <>
@@ -45,7 +55,21 @@ export default function Header({ lang, copy, onLanguageChange }: HeaderProps) {
           <button className="language-switch" onClick={() => onLanguageChange(lang === 'en' ? 'ar' : 'en')}>
             {lang === 'en' ? 'عربي' : 'EN'}
           </button>
-          <button className="icon-button desktop-action" aria-label="Search"><Search size={19} strokeWidth={1.6} /></button>
+          
+          {/* فورم البحث */}
+          <form onSubmit={handleSearch} style={{ display: 'flex', alignItems: 'center', borderBottom: '1px solid #ccc' }}>
+            <input 
+              type="text" 
+              placeholder="ابحث..." 
+              value={searchQuery}
+              onChange={(e) => setSearchQuery(e.target.value)}
+              style={{ border: 'none', background: 'transparent', outline: 'none', width: '80px', fontSize: '11px', padding: '4px' }}
+            />
+            <button type="submit" className="icon-button" aria-label="Search" style={{ padding: '0 4px' }}>
+              <Search size={16} strokeWidth={1.6} />
+            </button>
+          </form>
+
           <button className="icon-button desktop-action" aria-label="Wishlist"><Heart size={19} strokeWidth={1.6} /></button>
           <Link to="/cart" className="icon-button bag-button" aria-label="Shopping bag" style={{ textDecoration: 'none', color: 'inherit' }}>
             <ShoppingBag size={19} strokeWidth={1.6} />
