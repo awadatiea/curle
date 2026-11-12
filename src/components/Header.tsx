@@ -1,6 +1,8 @@
-import { useState } from 'react'
-import { Menu, X, ShoppingBag, Search, Heart } from 'lucide-react'
+import { useState, useEffect } from 'react'
+import { Menu, X, ShoppingBag, Search, Heart, User, Shield } from 'lucide-react'
+import { Link, useLocation } from 'react-router-dom'
 import type { Language, Copy } from '../types'
+import { useAuth } from '../contexts/AuthContext'
 
 interface HeaderProps {
   lang: Language
@@ -10,12 +12,21 @@ interface HeaderProps {
 
 export default function Header({ lang, copy, onLanguageChange }: HeaderProps) {
   const [menuOpen, setMenuOpen] = useState(false)
+  const [cartCount, setCartCount] = useState(0)
+  const { user, signOut } = useAuth()
+  const location = useLocation()
+
   const links = [
-    { label: copy.nav.home, href: '#home' },
-    { label: copy.nav.shop, href: '#shop' },
-    { label: copy.nav.journal, href: '#journal' },
-    { label: copy.nav.ourStory, href: '#story' },
+    { label: copy.nav.home, href: '/' },
+    { label: copy.nav.shop, href: '/shop' },
+    { label: copy.nav.journal, href: '/blog' },
+    { label: copy.nav.ourStory, href: '/#story' }, // يودي للرئيسية وينزل للقسم
   ]
+
+  useEffect(() => {
+    const cart = JSON.parse(localStorage.getItem('cart') || '[]')
+    setCartCount(cart.reduce((sum: number, item: any) => sum + item.quantity, 0))
+  }, [location.pathname]) // تحديث السلة لما المسار يتغير
 
   return (
     <>
@@ -24,10 +35,10 @@ export default function Header({ lang, copy, onLanguageChange }: HeaderProps) {
         <button className="icon-button mobile-menu" aria-label="Toggle menu" onClick={() => setMenuOpen(!menuOpen)}>
           {menuOpen ? <X size={21} /> : <Menu size={21} />}
         </button>
-        <a href="#home" className="wordmark" aria-label="CURLÉ home">CURL<span>É</span></a>
+        <Link to="/" className="wordmark" aria-label="CURLÉ home">CURL<span>É</span></Link>
         <nav className={`main-nav ${menuOpen ? 'is-open' : ''}`}>
           {links.map((link) => (
-            <a key={link.href} href={link.href} onClick={() => setMenuOpen(false)}>{link.label}</a>
+            <Link key={link.href} to={link.href} onClick={() => setMenuOpen(false)}>{link.label}</Link>
           ))}
         </nav>
         <div className="header-actions">
@@ -36,7 +47,25 @@ export default function Header({ lang, copy, onLanguageChange }: HeaderProps) {
           </button>
           <button className="icon-button desktop-action" aria-label="Search"><Search size={19} strokeWidth={1.6} /></button>
           <button className="icon-button desktop-action" aria-label="Wishlist"><Heart size={19} strokeWidth={1.6} /></button>
-          <button className="icon-button bag-button" aria-label="Shopping bag"><ShoppingBag size={19} strokeWidth={1.6} /><span>0</span></button>
+          <Link to="/cart" className="icon-button bag-button" aria-label="Shopping bag" style={{ textDecoration: 'none', color: 'inherit' }}>
+            <ShoppingBag size={19} strokeWidth={1.6} />
+            <span>{cartCount}</span>
+          </Link>
+          
+          {user ? (
+            <div style={{ display: 'flex', alignItems: 'center', gap: '15px' }}>
+              <Link to="/admin" style={{ fontSize: '11px', color: '#674a3a', textDecoration: 'none', display: 'flex', alignItems: 'center', gap: '4px' }}>
+                <Shield size={16} /> لوحة التحكم
+              </Link>
+              <button onClick={signOut} style={{ fontSize: '11px', color: '#674a3a', border: 'none', background: 'none', cursor: 'pointer', display: 'flex', alignItems: 'center', gap: '4px' }}>
+                <User size={16} /> خروج
+              </button>
+            </div>
+          ) : (
+            <Link to="/login" style={{ fontSize: '11px', color: '#674a3a', textDecoration: 'none', display: 'flex', alignItems: 'center', gap: '4px' }}>
+              <User size={16} /> دخول
+            </Link>
+          )}
         </div>
       </header>
     </>

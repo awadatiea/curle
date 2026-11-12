@@ -1,27 +1,21 @@
-import { useState } from 'react'
-import { ArrowDown, ArrowUpRight, ArrowRight, Star, Sparkles, Leaf, Droplets } from 'lucide-react'
+import { useState, useEffect } from 'react'
+import { ArrowDown, ArrowUpRight, ArrowRight, Star, Sparkles, Leaf, Droplets, ShoppingBag } from 'lucide-react'
+import { Link } from 'react-router-dom'
 import Header from '../components/Header'
 import Footer from '../components/Footer'
 import SectionHeading from '../components/SectionHeading'
 import { en } from '../locales/en'
 import { ar } from '../locales/ar'
 import type { Language } from '../types'
+import { getActiveProducts, type Product } from '../services/products'
 
-// صور البنات بشعر كيرلي
+// صور بنات بشعر كيرلي حقيقي (ثابتة)
 const categoryImages = [
   'https://images.unsplash.com/photo-1605980776566-0486c3ac7617?auto=format&fit=crop&w=900&q=85',
   'https://images.unsplash.com/photo-1595959183082-7b570b7e08e2?auto=format&fit=crop&w=900&q=85',
   'https://images.unsplash.com/photo-1523264653568-d3d4032d1476?auto=format&fit=crop&w=900&q=85',
 ]
 
-// صور منتجات الشعر الكيرلي
-const productImages = [
-  'https://images.unsplash.com/photo-1608248543803-ba4f8c70ae0b?auto=format&fit=crop&w=900&q=85',
-  'https://images.unsplash.com/photo-1601049541289-9b1b7bbbfe19?auto=format&fit=crop&w=900&q=85',
-  'https://images.unsplash.com/photo-1608571423902-eed4a5ad8108?auto=format&fit=crop&w=900&q=85',
-]
-
-// صور المقالات (كيرلي)
 const journalImages = [
   'https://images.unsplash.com/photo-1580618672591-eb180b1a973f?auto=format&fit=crop&w=1000&q=85',
   'https://images.unsplash.com/photo-1605980776566-0486c3ac7617?auto=format&fit=crop&w=1000&q=85',
@@ -30,8 +24,27 @@ const journalImages = [
 
 export default function HomePage() {
   const [lang, setLang] = useState<Language>('en')
+  const [products, setProducts] = useState<Product[]>([])
   const copy = lang === 'en' ? en : ar
   const isArabic = lang === 'ar'
+
+  useEffect(() => {
+    getActiveProducts().then(setProducts).catch(console.error)
+  }, [])
+
+  const addToCart = (product: Product) => {
+    const cart = JSON.parse(localStorage.getItem('cart') || '[]')
+    const existingItem = cart.find((item: any) => item.id === product.id)
+    
+    if (existingItem) {
+      existingItem.quantity += 1
+    } else {
+      cart.push({ ...product, quantity: 1 })
+    }
+    
+    localStorage.setItem('cart', JSON.stringify(cart))
+    alert('تمت إضافة المنتج للسلة!')
+  }
 
   return (
     <div className={`app-shell ${isArabic ? 'arabic' : ''}`} dir={isArabic ? 'rtl' : 'ltr'} lang={lang}>
@@ -46,8 +59,8 @@ export default function HomePage() {
             <h1>{copy.hero.title.split('\\n').map((line, i) => <span key={i}>{line}</span>)}</h1>
             <p className="hero-description">{copy.hero.body}</p>
             <div className="hero-buttons">
-              <a href="#ritual" className="button button-light">{copy.hero.primary}<ArrowUpRight size={17} /></a>
-              <a href="#shop" className="text-link light-link">{copy.hero.secondary}<ArrowRight size={17} /></a>
+              <Link to="/routine" className="button button-light">{copy.hero.primary}<ArrowUpRight size={17} /></Link>
+              <Link to="/shop" className="text-link light-link">{copy.hero.secondary}<ArrowRight size={17} /></Link>
             </div>
             <div className="hero-note"><span />{copy.hero.note}</div>
           </div>
@@ -55,16 +68,17 @@ export default function HomePage() {
           <a href="#story" className="scroll-cue"><span>SCROLL TO EXPLORE</span><ArrowDown size={15} /></a>
         </section>
 
+        {/* قسم intro مع id="story" */}
         <section className="intro-section section-pad" id="story">
           <div className="intro-image-wrap">
-            <img src="https://images.unsplash.com/photo-1580618672591-eb180b1a973f?auto=format&fit=crop&w=1100&q=90" alt="Natural beauty portrait" />
+            <img src="https://images.unsplash.com/photo-1580618672591-eb180b1a973f?auto=format&fit=crop&w=1100&q=90" alt="Natural curly beauty portrait" />
             <div className="image-caption"><Sparkles size={16} /><span>Beauty in every texture</span></div>
           </div>
           <div className="intro-copy">
             <p className="eyebrow">{copy.intro.eyebrow}</p>
             <h2>{copy.intro.title}</h2>
             <p className="body-copy">{copy.intro.body}</p>
-            <a href="#ritual" className="underlined-link">{copy.intro.link}<ArrowUpRight size={17} /></a>
+            <Link to="/blog" className="underlined-link">{copy.intro.link}<ArrowUpRight size={17} /></Link>
             <div className="intro-stamp"><span>CUR</span><strong>É</strong><span>LOVE YOUR TEXTURE</span></div>
           </div>
         </section>
@@ -73,26 +87,39 @@ export default function HomePage() {
           <SectionHeading eyebrow="YOUR TEXTURE, YOUR STORY" title={copy.categories.title} subtitle={copy.categories.subtitle} centered />
           <div className="category-grid">
             {copy.categories.items.map((item, i) => (
-              <a href="#quiz" className="category-card" key={item.name}>
+              <Link to="/routine" className="category-card" key={item.name}>
                 <div className="category-image"><img src={categoryImages[i]} alt={item.name} /><span className="category-number">0{i + 1}</span><span className="category-arrow"><ArrowUpRight size={20} /></span></div>
                 <div className="category-info"><h3>{item.name}</h3><p>{item.detail}</p></div>
-              </a>
+              </Link>
             ))}
           </div>
-          <a href="#quiz" className="center-link">{isArabic ? 'اكتشفي نوع شعرك' : 'Discover your curl type'}<ArrowUpRight size={17} /></a>
+          <Link to="/routine" className="center-link">{isArabic ? 'اكتشفي نوع شعرك' : 'Discover your curl type'}<ArrowUpRight size={17} /></Link>
         </section>
 
         <section className="product-section section-pad" id="shop">
           <div className="section-topline">
             <SectionHeading eyebrow={copy.products.eyebrow} title={copy.products.title} />
-            <a href="#shop-all" className="underlined-link">{copy.products.link}<ArrowUpRight size={17} /></a>
+            <Link to="/shop" className="underlined-link">{copy.products.link}<ArrowUpRight size={17} /></Link>
           </div>
           <div className="product-grid">
-            {copy.products.items.map((item, i) => (
-              <article className="product-card" key={item.name}>
-                <div className="product-image"><img src={productImages[i]} alt={item.name} /><span className="product-tag">{item.tag}</span><button className="quick-add" aria-label={`Discover ${item.name}`}><ArrowUpRight size={19} /></button></div>
-                <div className="product-meta"><div><h3>{item.name}</h3><p>{item.type}</p></div><strong>{item.price}</strong></div>
-                <a href="#product" className="product-discover">{copy.products.add}<ArrowUpRight size={15} /></a>
+            {products.slice(0, 3).map((product) => (
+              <article className="product-card" key={product.id}>
+                <div className="product-image">
+                  <img src={product.image_url || ''} alt={product.name_ar} />
+                  <button className="quick-add" onClick={() => addToCart(product)} aria-label="Add to cart">
+                    <ShoppingBag size={19} />
+                  </button>
+                </div>
+                <div className="product-meta">
+                  <div>
+                    <h3>{product.name_ar}</h3>
+                    <p>{product.description_ar?.slice(0, 30)}...</p>
+                  </div>
+                  <strong>{product.price} ج.م</strong>
+                </div>
+                <Link to={`/shop/${product.slug}`} className="product-discover">
+                  اكتشفي المنتج <ArrowUpRight size={15} />
+                </Link>
               </article>
             ))}
           </div>
@@ -107,8 +134,6 @@ export default function HomePage() {
             <p className="eyebrow">{copy.ritual.eyebrow}</p>
             <h2>{copy.ritual.title}</h2>
             <p className="body-copy">{copy.ritual.body}</p>
-            
-            {/* Interactive Steps */}
             <div className="ritual-steps-interactive">
               {copy.ritual.steps.map((step, i) => (
                 <div className="ritual-step-card" key={step.number}>
@@ -121,27 +146,23 @@ export default function HomePage() {
                 </div>
               ))}
             </div>
-
-            <a href="#quiz" className="button button-dark" style={{ marginTop: '30px' }}>
-              {copy.ritual.cta}
-              <ArrowUpRight size={17} />
-            </a>
+            <Link to="/routine" className="button button-dark" style={{ marginTop: '30px' }}>{copy.ritual.cta}<ArrowUpRight size={17} /></Link>
           </div>
         </section>
 
         <section className="journal-section section-pad" id="journal">
           <div className="section-topline">
             <SectionHeading eyebrow={copy.journal.eyebrow} title={copy.journal.title} />
-            <a href="#all-articles" className="underlined-link">{copy.journal.link}<ArrowUpRight size={17} /></a>
+            <Link to="/blog" className="underlined-link">{copy.journal.link}<ArrowUpRight size={17} /></Link>
           </div>
           <div className="journal-grid">
             {copy.journal.articles.map((article, i) => (
-              <a href="#article" className="journal-card" key={article.title}>
+              <Link to="/blog" className="journal-card" key={article.title}>
                 <div className="journal-image"><img src={journalImages[i]} alt="" /><span><ArrowUpRight size={19} /></span></div>
                 <p className="eyebrow">{article.category}</p>
                 <h3>{article.title}</h3>
                 <div className="journal-read"><span>{article.read}</span><span className="read-line" /></div>
-              </a>
+              </Link>
             ))}
           </div>
         </section>

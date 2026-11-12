@@ -23,9 +23,11 @@ button{cursor:pointer}
 .icon-button span{font-size:10px}
 .language-switch{border:0;border-bottom:1px solid #a78a73;background:none;padding:3px 0;font-size:11px;color:#674a3a}
 .mobile-menu{display:none}
+
+/* صورة الـ Hero (بنت بشعر كيرلي) */
 .hero{height:min(690px,75vw);min-height:570px;position:relative;color:#fff;background:#4d4036;isolation:isolate}
 .hero-image,.hero-overlay{position:absolute;inset:0;z-index:-1}
-.hero-image{background-image:url('https://images.unsplash.com/photo-1531123897727-8f129e1688ce?auto=format&fit=crop&w=2200&q=90');background-position:center 36%;background-size:cover;transform:scaleX(-1)}
+.hero-image{background-image:url('https://images.unsplash.com/photo-1595959183082-7b570b7e08e2?auto=format&fit=crop&w=2200&q=90');background-position:center 30%;background-size:cover;transform:scaleX(-1)}
 .hero-overlay{background:linear-gradient(90deg,rgba(25,22,19,.68) 0%,rgba(25,22,19,.38) 48%,rgba(25,22,19,.05) 100%)}
 .hero-content{position:absolute;left:11%;top:50%;transform:translateY(-48%);max-width:570px}
 .eyebrow{font-size:9px;letter-spacing:.2em;color:#a47d60;font-weight:600;margin:0 0 19px;text-transform:uppercase}
@@ -232,4 +234,81 @@ button{cursor:pointer}
  .arabic .ritual-visual{margin:0 20px 0 0}
  .arabic .ritual-visual-label{right:-20px;left:auto}
  .arabic .section-topline{align-items:flex-start}
+}
+
+/* =========================================
+   Interactive Ritual Steps
+   ========================================= */
+.ritual-steps-interactive {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+  margin: 32px 0;
+}
+
+.ritual-step-card {
+  background-color: #ffffff;
+  border: 1px solid #e8d9c8;
+  border-radius: 12px;
+  padding: 20px 24px;
+  transition: all 0.3s ease;
+  cursor: pointer;
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.02);
+}
+
+.ritual-step-card:hover {
+  transform: translateY(-4px);
+  box-shadow: 0 8px 15px rgba(103, 74, 58, 0.08);
+  border-color: #b58d70;
+}
+
+.ritual-step-header {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  margin-bottom: 12px;
+}
+
+.ritual-step-header .step-number {
+  background-color: #f8f4ee;
+  color: #674a3a;
+  width: 32px;
+  height: 32px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 50%;
+  font-size: 12px;
+  font-weight: 600;
+}
+
+.ritual-step-header h3 {
+  font-family: 'Playfair Display', serif;
+  font-size: 20px;
+  font-weight: 500;
+  color: #27231f;
+  margin: 0;
+  flex: 1;
+}
+
+.ritual-step-header .step-icon {
+  color: #b58d70;
+}
+
+.ritual-step-body {
+  font-size: 13px;
+  line-height: 1.8;
+  color: #766b61;
+  margin: 0;
+  padding-left: 44px;
+}
+
+/* RTL Support */
+.arabic .ritual-step-body {
+  padding-left: 0;
+  padding-right: 44px;
+}
+.arabic .ritual-step-header .step-icon {
+  margin-left: 0;
+  margin-right: auto;
 }
