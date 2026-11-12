@@ -1,6 +1,6 @@
 import { useState } from 'react'
 import { Link } from 'react-router-dom'
-import { ArrowLeft, Droplets, Leaf, Wind, CheckCircle } from 'lucide-react'
+import { ArrowLeft, Droplets, Leaf, Wind } from 'lucide-react'
 
 const routines = {
   wavy: {
@@ -44,7 +44,6 @@ export default function RoutinePage() {
       <h1 style={{ fontFamily: "'Playfair Display', serif", fontSize: '42px', marginBottom: '10px' }}>اكتشفي روتينك</h1>
       <p style={{ color: '#766b61', marginBottom: '40px' }}>اختاري نوع شعرك عشان نعرضلك روتين العناية المناسب ليكي.</p>
 
-      {/* اختيار نوع الشعر */}
       <div style={{ display: 'flex', gap: '15px', marginBottom: '40px', flexWrap: 'wrap' }}>
         {(['wavy', 'curly', 'coily'] as const).map((type) => (
           <button
@@ -65,7 +64,6 @@ export default function RoutinePage() {
         ))}
       </div>
 
-      {/* عرض الروتين */}
       {selectedType && (
         <div style={{ background: '#fff', border: '1px solid #e8d9c8', borderRadius: '12px', padding: '30px' }}>
           <h2 style={{ fontFamily: "'Playfair Display', serif", fontSize: '28px', marginBottom: '24px' }}>{routines[selectedType].title}</h2>

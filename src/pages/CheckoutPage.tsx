@@ -26,7 +26,6 @@ export default function CheckoutPage() {
   const navigate = useNavigate()
   const { user } = useAuth()
 
-  // رقم الواتساب بتاعك (بصيغة دولية من غير +)
   const MY_WHATSAPP = '201277773155'
 
   useEffect(() => {
@@ -42,9 +41,8 @@ export default function CheckoutPage() {
     if (!supabase || cart.length === 0 || !selectedGov) return
     setLoading(true)
 
-    // 1. حفظ الطلب في قاعدة البيانات
     const { error } = await supabase.from('orders').insert({
-      user_id: user?.id || null,
+      user_id: user ? user.id : null, // تصحيح مشكلة TypeScript
       customer_name: customerName || 'عميل كيرلي',
       customer_email: user?.email || 'guest@curle.com',
       customer_phone: customerPhone || '01000000000',
@@ -63,7 +61,6 @@ export default function CheckoutPage() {
       return
     }
 
-    // 2. تجهيز رسالة الواتساب
     let message = `*طلب جديد من CURLÉ*%0A%0A`
     message += `*الاسم:* ${customerName}%0A`
     message += `*رقم الهاتف:* ${customerPhone}%0A`
@@ -77,11 +74,9 @@ export default function CheckoutPage() {
     message += `*الشحن:* ${shippingCost} ج.م%0A`
     message += `*الإجمالي:* ${total} ج.م`
 
-    // 3. فتح واتساب بالرسالة
     const whatsappUrl = `https://wa.me/${MY_WHATSAPP}?text=${message}`
     window.open(whatsappUrl, '_blank')
 
-    // 4. التنظيف والتحويل
     localStorage.removeItem('cart')
     alert('تم تأكيد طلبك! جاري تحويلك للواتساب لتأكيد الطلب معنا.')
     navigate(user ? '/account' : '/')

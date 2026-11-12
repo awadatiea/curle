@@ -16,12 +16,14 @@ export default function AccountPage() {
       return
     }
 
+    const currentUser = user // حل مشكلة TypeScript
+
     async function fetchOrders() {
       if (!supabase) return
       const { data, error } = await supabase
         .from('orders')
         .select('*')
-        .eq('user_id', user.id)
+        .eq('user_id', currentUser.id)
         .order('created_at', { ascending: false })
 
       if (error) {
