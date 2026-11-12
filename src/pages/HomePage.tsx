@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react'
-import { ArrowDown, ArrowUpRight, ArrowRight, Star, Sparkles, Leaf, Droplets, ShoppingBag } from 'lucide-react'
+import { ArrowDown, ArrowUpRight, ArrowRight, Star, Sparkles, Leaf, Droplets, ShoppingBag, Quote } from 'lucide-react'
 import { Link } from 'react-router-dom'
 import Header from '../components/Header'
 import Footer from '../components/Footer'
@@ -9,7 +9,7 @@ import { ar } from '../locales/ar'
 import type { Language } from '../types'
 import { getActiveProducts, type Product } from '../services/products'
 
-// صور بنات بشعر كيرلي حقيقي (ثابتة)
+// صور بنات بشعر كيرلي
 const categoryImages = [
   'https://images.unsplash.com/photo-1605980776566-0486c3ac7617?auto=format&fit=crop&w=900&q=85',
   'https://images.unsplash.com/photo-1595959183082-7b570b7e08e2?auto=format&fit=crop&w=900&q=85',
@@ -22,9 +22,17 @@ const journalImages = [
   'https://images.unsplash.com/photo-1595959183082-7b570b7e08e2?auto=format&fit=crop&w=1000&q=85',
 ]
 
+// آراء العملاء
+const testimonials = [
+  { name: 'مريم', text: 'أول مرة أحس إن شعري الكيرلي سهل! الروتين والمنتجات غيروا شعري تمامًا.', image: 'https://images.unsplash.com/photo-1531123897727-8f129e1688ce?auto=format&fit=crop&w=150&q=80' },
+  { name: 'سارة', text: 'بجد أحسن حاجة جربتها لشعري، بقى ناعم ومحدد من غير أي مجهود.', image: 'https://images.unsplash.com/photo-1523264653568-d3d4032d1476?auto=format&fit=crop&w=150&q=80' },
+  { name: 'نور', text: 'أخيرًا لقيت منتجات بتفهم شعري الكيرلي! أنصح كل بنت تجرب.', image: 'https://images.unsplash.com/photo-1595959183082-7b570b7e08e2?auto=format&fit=crop&w=150&q=80' },
+]
+
 export default function HomePage() {
   const [lang, setLang] = useState<Language>('en')
   const [products, setProducts] = useState<Product[]>([])
+  const [sliderPos, setSliderPos] = useState(50)
   const copy = lang === 'en' ? en : ar
   const isArabic = lang === 'ar'
 
@@ -51,6 +59,7 @@ export default function HomePage() {
       <Header lang={lang} copy={copy} onLanguageChange={setLang} />
 
       <main>
+        {/* Hero */}
         <section className="hero" id="home">
           <div className="hero-image" />
           <div className="hero-overlay" />
@@ -68,10 +77,10 @@ export default function HomePage() {
           <a href="#story" className="scroll-cue"><span>SCROLL TO EXPLORE</span><ArrowDown size={15} /></a>
         </section>
 
-        {/* قسم intro مع id="story" */}
+        {/* Intro */}
         <section className="intro-section section-pad" id="story">
           <div className="intro-image-wrap">
-            <img src="https://images.unsplash.com/photo-1580618672591-eb180b1a973f?auto=format&fit=crop&w=1100&q=90" alt="Natural curly beauty portrait" />
+            <img src="https://images.unsplash.com/photo-1580618672591-eb180b1a973f?auto=format&fit=crop&w=1100&q=90" alt="Natural curly beauty" />
             <div className="image-caption"><Sparkles size={16} /><span>Beauty in every texture</span></div>
           </div>
           <div className="intro-copy">
@@ -83,19 +92,24 @@ export default function HomePage() {
           </div>
         </section>
 
-        <section className="texture-section section-pad">
-          <SectionHeading eyebrow="YOUR TEXTURE, YOUR STORY" title={copy.categories.title} subtitle={copy.categories.subtitle} centered />
-          <div className="category-grid">
-            {copy.categories.items.map((item, i) => (
-              <Link to="/routine" className="category-card" key={item.name}>
-                <div className="category-image"><img src={categoryImages[i]} alt={item.name} /><span className="category-number">0{i + 1}</span><span className="category-arrow"><ArrowUpRight size={20} /></span></div>
-                <div className="category-info"><h3>{item.name}</h3><p>{item.detail}</p></div>
-              </Link>
-            ))}
+        {/* Before/After Slider */}
+        <section className="section-pad" style={{ background: '#f8f4ee' }}>
+          <SectionHeading eyebrow="REAL RESULTS" title="شوفي الفرق بنفسك" centered />
+          <div className="before-after-container">
+            <div className="before-after-slider" style={{ '--pos': `${sliderPos}%` } as React.CSSProperties}>
+              <img src="https://images.unsplash.com/photo-1522337360788-8b13dee7a37e?auto=format&fit=crop&w=800&q=85" alt="Before" className="before-img" />
+              <img src="https://images.unsplash.com/photo-1595959183082-7b570b7e08e2?auto=format&fit=crop&w=800&q=85" alt="After" className="after-img" />
+              <div className="slider-handle" />
+              <input 
+                type="range" min="0" max="100" value={sliderPos} 
+                onChange={(e) => setSliderPos(Number(e.target.value))} 
+                className="slider-input" 
+              />
+            </div>
           </div>
-          <Link to="/routine" className="center-link">{isArabic ? 'اكتشفي نوع شعرك' : 'Discover your curl type'}<ArrowUpRight size={17} /></Link>
         </section>
 
+        {/* Products */}
         <section className="product-section section-pad" id="shop">
           <div className="section-topline">
             <SectionHeading eyebrow={copy.products.eyebrow} title={copy.products.title} />
@@ -111,23 +125,19 @@ export default function HomePage() {
                   </button>
                 </div>
                 <div className="product-meta">
-                  <div>
-                    <h3>{product.name_ar}</h3>
-                    <p>{product.description_ar?.slice(0, 30)}...</p>
-                  </div>
+                  <div><h3>{product.name_ar}</h3><p>{product.description_ar?.slice(0, 30)}...</p></div>
                   <strong>{product.price} ج.م</strong>
                 </div>
-                <Link to={`/shop/${product.slug}`} className="product-discover">
-                  اكتشفي المنتج <ArrowUpRight size={15} />
-                </Link>
+                <Link to={`/shop/${product.slug}`} className="product-discover">اكتشفي المنتج <ArrowUpRight size={15} /></Link>
               </article>
             ))}
           </div>
         </section>
 
+        {/* Ritual */}
         <section className="ritual-section section-pad" id="ritual">
           <div className="ritual-visual">
-            <img src="https://images.unsplash.com/photo-1595959183082-7b570b7e08e2?auto=format&fit=crop&w=1200&q=90" alt="Woman with natural textured hair" />
+            <img src="https://images.unsplash.com/photo-1595959183082-7b570b7e08e2?auto=format&fit=crop&w=1200&q=90" alt="Natural textured hair" />
             <div className="ritual-visual-label"><span>THE CURLÉ WAY</span><strong>Less rules.<br />More you.</strong></div>
           </div>
           <div className="ritual-content">
@@ -150,6 +160,24 @@ export default function HomePage() {
           </div>
         </section>
 
+        {/* Testimonials */}
+        <section className="section-pad" style={{ background: '#eee5da' }}>
+          <SectionHeading eyebrow="REAL WOMEN. REAL CURLS." title="بيحبوا CURLÉ" centered />
+          <div className="testimonials-grid">
+            {testimonials.map((t, i) => (
+              <div key={i} className="testimonial-card">
+                <Quote size={32} color="#b58d70" style={{ marginBottom: '16px' }} />
+                <p style={{ fontSize: '15px', lineHeight: 1.8, fontStyle: 'italic', marginBottom: '24px' }}>{t.text}</p>
+                <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
+                  <img src={t.image} alt={t.name} style={{ width: '48px', height: '48px', borderRadius: '50%', objectFit: 'cover' }} />
+                  <strong style={{ fontSize: '14px' }}>{t.name}</strong>
+                </div>
+              </div>
+            ))}
+          </div>
+        </section>
+
+        {/* Journal */}
         <section className="journal-section section-pad" id="journal">
           <div className="section-topline">
             <SectionHeading eyebrow={copy.journal.eyebrow} title={copy.journal.title} />
@@ -167,6 +195,7 @@ export default function HomePage() {
           </div>
         </section>
 
+        {/* Quote */}
         <section className="quote-section">
           <div className="quote-mark">“</div>
           <p>{isArabic ? 'شعرك مش محتاج يتغير علشان يبقى جميل. هو جميل بطبيعته.' : 'Your hair doesn’t need to change to be beautiful. It already is.'}</p>
@@ -174,6 +203,7 @@ export default function HomePage() {
           <div className="quote-stars"><Star /><Star /><Star /></div>
         </section>
 
+        {/* Newsletter */}
         <section className="newsletter-banner">
           <div><p className="eyebrow light">A NOTE FROM CURLÉ</p><h2>{isArabic ? 'خلّي العناية جزء من حكايتك.' : 'Make room for a little more self-love.'}</h2><p>{isArabic ? 'انضمي لمجتمعنا واكتشفي نصائح واختيارات معمولة لشعرك.' : 'Join our community for thoughtful tips, new rituals, and curl inspiration.'}</p></div>
           <form onSubmit={(e) => e.preventDefault()} className="banner-form"><input type="email" placeholder={copy.footer.placeholder} aria-label={copy.footer.placeholder} /><button type="submit"><ArrowUpRight size={19} /></button></form>
