@@ -1,5 +1,4 @@
 // Minimal typed schema for the tables used by the frontend.
-// Regenerate from your own Supabase project later with the Supabase CLI.
 export type Json = string | number | boolean | null | { [key: string]: Json | undefined } | Json[]
 
 export interface Database {
@@ -27,6 +26,46 @@ export interface Database {
         Row: { id: string; author_id: string | null; title_en: string; title_ar: string; slug: string; excerpt_en: string | null; excerpt_ar: string | null; content_en: string | null; content_ar: string | null; cover_image_url: string | null; status: string; published_at: string | null; created_at: string; updated_at: string }
         Insert: { id?: string; author_id?: string | null; title_en: string; title_ar: string; slug: string; excerpt_en?: string | null; excerpt_ar?: string | null; content_en?: string | null; content_ar?: string | null; cover_image_url?: string | null; status?: string; published_at?: string | null; created_at?: string; updated_at?: string }
         Update: Partial<Database['public']['Tables']['blog_posts']['Insert']>
+        Relationships: []
+      }
+      orders: {
+        Row: {
+          id: string;
+          user_id: string | null;
+          order_number: number;
+          customer_name: string;
+          customer_email: string;
+          customer_phone: string | null;
+          shipping_address: Json;
+          status: string;
+          payment_method: string;
+          payment_status: string;
+          subtotal: number;
+          shipping_fee: number;
+          total: number;
+          notes: string | null;
+          created_at: string;
+          updated_at: string;
+        }
+        Insert: {
+          id?: string;
+          user_id?: string | null;
+          order_number?: number;
+          customer_name: string;
+          customer_email: string;
+          customer_phone?: string | null;
+          shipping_address: Json;
+          status?: string;
+          payment_method?: string;
+          payment_status?: string;
+          subtotal: number;
+          shipping_fee?: number;
+          total: number;
+          notes?: string | null;
+          created_at?: string;
+          updated_at?: string;
+        }
+        Update: Partial<Database['public']['Tables']['orders']['Insert']>
         Relationships: []
       }
     }

@@ -41,8 +41,7 @@ export default function CheckoutPage() {
     if (!supabase || cart.length === 0 || !selectedGov) return
     setLoading(true)
 
-    const { error } = await supabase.from('orders').insert({
-      user_id: user ? user.id : null, // تصحيح مشكلة TypeScript
+    const orderData: any = {
       customer_name: customerName || 'عميل كيرلي',
       customer_email: user?.email || 'guest@curle.com',
       customer_phone: customerPhone || '01000000000',
@@ -53,7 +52,13 @@ export default function CheckoutPage() {
       subtotal: subtotal,
       shipping_fee: shippingCost,
       total: total
-    })
+    }
+
+    if (user) {
+      orderData.user_id = user.id
+    }
+
+    const { error } = await supabase.from('orders').insert(orderData)
 
     if (error) {
       alert('خطأ في الطلب: ' + error.message)
