@@ -56,6 +56,25 @@ export default function HomePage() {
               <Link to="/shop" className="text-link light-link">{copy.hero.secondary}<ArrowRight size={17} /></Link>
             </div>
             <div className="hero-note"><span />{copy.hero.note}</div>
+            
+            {/* الزرار الجديد للخدمات */}
+            <div style={{ marginTop: '30px' }}>
+              <Link 
+                to="/services" 
+                style={{ 
+                  display: 'inline-block', 
+                  padding: '16px 40px', 
+                  background: 'transparent', 
+                  border: '1px solid #f8f4ee', 
+                  color: '#f8f4ee', 
+                  textDecoration: 'none',
+                  fontSize: '12px',
+                  letterSpacing: '0.1em'
+                }}
+              >
+                تعرف على خدماتنا وأسعارنا
+              </Link>
+            </div>
           </div>
           <div className="hero-index"><span>01</span><span className="index-line" /><span>04</span></div>
           <a href="#story" className="scroll-cue"><span>SCROLL TO EXPLORE</span><ArrowDown size={15} /></a>
@@ -107,15 +126,10 @@ export default function HomePage() {
                   </button>
                 </div>
                 <div className="product-meta">
-                  <div>
-                    <h3>{product.name_ar}</h3>
-                    <p>{product.description_ar?.slice(0, 30)}...</p>
-                  </div>
+                  <div><h3>{product.name_ar}</h3><p>{product.description_ar?.slice(0, 30)}...</p></div>
                   <strong>{product.price} ج.م</strong>
                 </div>
-                <Link to={`/shop/${product.slug}`} className="product-discover">
-                  اكتشفي المنتج <ArrowUpRight size={15} />
-                </Link>
+                <Link to={`/shop/${product.slug}`} className="product-discover">اكتشفي المنتج <ArrowUpRight size={15} /></Link>
               </article>
             ))}
           </div>
