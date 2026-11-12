@@ -12,6 +12,7 @@ import CheckoutPage from './pages/CheckoutPage'
 import CartPage from './pages/CartPage'
 import AccountPage from './pages/AccountPage'
 import RoutinePage from './pages/RoutinePage'
+import ServicesPage from './pages/ServicesPage'
 
 export default function App() {
   return (
@@ -19,7 +20,7 @@ export default function App() {
       <BrowserRouter>
         {/* زرار الدعم (واتساب) */}
         <a 
-          href="https://wa.me/201234567890" 
+          href="https://wa.me/201277773155" 
           target="_blank" 
           rel="noopener noreferrer"
           style={{
@@ -56,6 +57,7 @@ export default function App() {
           <Route path="/cart" element={<CartPage />} />
           <Route path="/account" element={<AccountPage />} />
           <Route path="/routine" element={<RoutinePage />} />
+          <Route path="/services" element={<ServicesPage />} />
         </Routes>
       </BrowserRouter>
     </AuthProvider>
